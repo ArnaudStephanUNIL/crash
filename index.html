@@ -98,11 +98,15 @@ div.tooltip {
       //cette nouvelle valeur
       function choixX(){
         let variableX = d3.select(this).property('value')
+        console.log(variableX)
+        console.log(variableY)
         graphe(variableX,variableY)
       }
 
       function choixY(){
         let variableY = d3.select(this).property('value')
+        console.log(variableX)
+        console.log(variableY)
         graphe(variableX,variableY)
 
       }
@@ -160,7 +164,18 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
             .attr("r",4)
             .attr("opacity",.9)
             .attr("fill",d=>d3.interpolateCool(echelleCouleur(d.continent)))
-          .on("mouseover",function(d){
+
+          cercles.transition()
+            .duration(500)
+            .attr("cx",d=>echelleX(d[abs]))
+            .attr("cy",d=>echelleY(d[ord]))
+            .attr("r",4)
+            .attr("opacity",.9)
+            .attr("fill",d=>d3.interpolateCool(echelleCouleur(d.continent)))
+
+          cercles.exit()
+            .remove()
+          /*.on("mouseover",function(d){
             d3.select(this)
               .attr("r",6)
             div.transition()
@@ -176,7 +191,7 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
             div.transition()
               .duration(200)
               .style("opacity",0);
-        });
+        })*/
 
 //Création des deux axes
       var axeX = d3.axisBottom(echelleX);
@@ -208,17 +223,17 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
 
       }
 
-      graphe(variableX,variableY);
 
 
 
-      canevas.append("text")
+
+      /*canevas.append("text")
         .attr("x", (largeur / 2))             
         .attr("y", hauteur / 2)
         .attr("text-anchor", "middle")  
         .style("font-size","12px")
         .style("text-decoration", "underline")  
-        .text("Graphique");
+        .text("Graphique");*/
 
   });
 
