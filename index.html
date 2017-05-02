@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+  <meta charset="UTF-8">
+  <title>Crash d'avions - version 1</title>
+</head>
+
+<select>
+</select>
+
+<body>
+
+<style>
+
+body {
+  font: 12px Arial,}
+
+svg{
+  border: solid 1px;
+}
+
+path { 
+  stroke: #4682B4;
+  stroke-width: 2;
+  fill: none;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+div.tooltip { 
+    position: absolute;     
+    text-align: center;     
+    /*width: 80px;          
+    height: 40px;*/        
+    padding: 2px;       
+    font: 12px helvetica;    
+    /*background: #ffcc99;*/
+    border: 0px;    
+    border-radius: 8px;     
+    pointer-events: none;     
+}
+
+</style>
+
+  <div id="option">
+      <input name="updateButton" 
+             type="button" 
+             value="Changement de Période">
+  </div>
+  
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.min.js'></script>
+  <script>
+  	d3.csv("crash.csv",function(d){
+  		return{
+  			kmSemaine : +d.avail_seat_km_per_week,
+  			accidents85 : +d.incidents_85_99,
+  			accidentsMortels85 : +d.fatal_accidents_85_99,
+  			morts85 : +d.fatalities_85_99,
+  			accidents00: +d.incidents_00_14,
+  			accidentsMortels00 : +d.fatal_accidents_00_14,
+  			morts00 : +d.fatalities_00_14,
+  			compagnie : d.airline,
+  			continent : d.continent
+  		};
+  }, function(data){
+      let marge = 40;
+      let largeur = window.innerWidth - (2 * marge);
+      let hauteur = window.innerHeight - (2 * marge);
+      let compteur = 0;
+
+
+      //Création du menu déroulant
+      let liste = data.compagnie.forEach(function(d){
+        d3.select("select")
+          .append("option")
+          .attr("value",d)
+          .text(d);
+})
+
+      //Changer la sélection
+        d3.select("select")
+          .on("change", affiche);
+
+      function affiche(){
+        let compagnie_choisie = d3.select(this).property('value');  
+      }
+
+
+      var echelleCouleur = d3.scaleOrdinal()
+        .domain(["Europe","South America","North America","Asia",
+           "Australia","Africa"])
+        .range([0,1/5,2/5,3/5,4/5,1]);
+
+  		let canevas = d3.select("body")
+  			.append("svg")
+  			 .attr("height", hauteur + 2*marge)
+  			 .attr("width",largeur + 2*marge)
+         .append("g")
+         .attr("transform", "translate(" + marge + "," + marge + ")");
+
+      let div = d3.select("body").append("div") 
+        .attr("class", "tooltip")       
+        .style("opacity", 0);
+
+
+
+/*Fonction qui prend un argument à mettre en X, un argument en Y
+et qui crée un graphique en fonction de ces deux aguments. On donne aussi deux arguments
+pour créer les échelles
+Actuellement le compteur ne sert à rien, mais il est utile si on veut mettre deux jeux de données
+sur le même canevas (par exemple les deux périodes temporelles en même temps)*/
+
+     function graphe(abs,ord){
+        compteur++;
+
+        var echelleX = d3.scaleLinear()
+          .domain([0,d3.max(data,d=>d[abs])])
+          .range([marge,largeur-marge]);
+
+        var echelleY = d3.scaleLinear()
+          .domain([0,d3.max(data,d=>d[ord])])
+          .range([hauteur-marge,marge]);
+
+        var cercles = canevas.selectAll("circle")
+          .data(data)
+          .enter()
+          .append("circle")
+            //.attr("class",`c${compteur}`)
+            .attr("cx",d=>echelleX(d[abs]))
+            .attr("cy",d=>echelleY(d[ord]))
+            .attr("r",4)
+            .attr("opacity",.9)
+            .attr("fill",d=>d3.interpolateCool(echelleCouleur(d.continent)))
+        .on("mouseover",function(d){
+            d3.select(this)
+              .attr("r",6)
+            div.transition()
+              .duration(200)
+              .style("opacity",.9)
+            div.html("<b>Airline : </b>"+d.compagnie+"<br><b>Continent : </b>"+d.continent)
+              .style("left", (d3.event.pageX) + "px")   
+              .style("top", (d3.event.pageY - 28) + "px");
+        })
+        .on("mouseout",function(d){
+            d3.select(this)
+              .attr("r",4)
+            div.transition()
+              .duration(200)
+              .style("opacity",0);
+        });
+
+      var axeX = d3.axisBottom(echelleX);
+      var axeY = d3.axisLeft(echelleY);
+
+// ajouter comportement au bouton
+      d3.select("input")
+        .on("click",updatePeriode);
+
+//Axe X avec la légende
+      canevas.append("g")
+        .attr("transform",`translate(0,${hauteur-marge})`)
+        .call(axeX);//.ticks(8,"e"));
+
+      canevas.append("text")
+        .attr("transform", "translate(" + (largeur / 2) + " ," + (hauteur) + ")")
+        .style("text-anchor","middle")
+        .text(abs);
+
+//Axe Y avec sa légende
+      canevas.append("g")
+        .attr("transform",`translate(${marge},0)`)
+        .call(axeY);//.ticks(4));
+
+        canevas.append("text")
+          .attr("transform","rotate(-90)")
+          .attr("y", 0)
+          .attr("x",-hauteur/2)
+          .style("text-anchor","middle")
+          .text(ord);
+
+      }
+
+      graphe("kmSemaine","accidents85");
+
+      function updatePeriode(){
+      if(compteur==0){graphe("kmSemaine",tableau[compteur+3])}
+      else{console.log("Else")}
+      }
+
+      let tableau = ["accidents85","accidentsMortels85","morts85",
+                      "accidents00","accidentsMortels00","morts00"];
+
+
+
+      /*canevas.append("text")
+        .attr("x", (largeur / 2))             
+        .attr("y", marge)
+        .attr("text-anchor", "middle")  
+        .style("font-size","12px")
+        .style("text-decoration", "underline")  
+        .text("Graphique");*/
+
+  });
+
+  </script>
+
+  
+</body>
+</html>
