@@ -13,8 +13,11 @@
 
 <style>
 
+.legende {
+  font: 10px sans-serif; }
+
 body {
-  font: 12px Arial,}
+  font: 12px sans-serif,}
 
 svg{
   border: solid 1px;
@@ -70,14 +73,14 @@ div.tooltip {
   			continent : d.continent
   		};
   }, function(data){
-      let marge = 40;
-      let largeur = window.innerWidth - (2 * marge);
-      let hauteur = window.innerHeight - (2 * marge);
+      let marge = 30;
+      let largeur = (window.innerWidth - (2 * marge))/2;
+      let hauteur = (window.innerHeight - (2 * marge))/2;
       let compteur = 0;
 
 
       //Création du menu déroulant
-      let liste = data.compagnie.forEach(function(d){
+      /*let liste = data.compagnie.forEach(function(d){
         d3.select("select")
           .append("option")
           .attr("value",d)
@@ -90,7 +93,7 @@ div.tooltip {
 
       function affiche(){
         let compagnie_choisie = d3.select(this).property('value');  
-      }
+      }*/
 
 
       var echelleCouleur = d3.scaleOrdinal()
@@ -102,6 +105,13 @@ div.tooltip {
   			.append("svg")
   			 .attr("height", hauteur + 2*marge)
   			 .attr("width",largeur + 2*marge)
+         .append("g")
+         .attr("transform", "translate(" + marge + "," + marge + ")");
+
+      let canevas2 = d3.select("body")
+        .append("svg")
+         .attr("height", hauteur + 2*marge)
+         .attr("width",largeur + 2*marge)
          .append("g")
          .attr("transform", "translate(" + marge + "," + marge + ")");
 
@@ -160,8 +170,8 @@ sur le même canevas (par exemple les deux périodes temporelles en même temps)
       var axeY = d3.axisLeft(echelleY);
 
 // ajouter comportement au bouton
-      d3.select("input")
-        .on("click",updatePeriode);
+      /*d3.select("input")
+        .on("click",updatePeriode);*/
 
 //Axe X avec la légende
       canevas.append("g")
@@ -169,7 +179,8 @@ sur le même canevas (par exemple les deux périodes temporelles en même temps)
         .call(axeX);//.ticks(8,"e"));
 
       canevas.append("text")
-        .attr("transform", "translate(" + (largeur / 2) + " ," + (hauteur) + ")")
+        .attr("class","legende")
+        .attr("transform", "translate(" + (largeur / 2) + " ," + (hauteur + marge/2) + ")")
         .style("text-anchor","middle")
         .text(abs);
 
@@ -178,34 +189,35 @@ sur le même canevas (par exemple les deux périodes temporelles en même temps)
         .attr("transform",`translate(${marge},0)`)
         .call(axeY);//.ticks(4));
 
-        canevas.append("text")
-          .attr("transform","rotate(-90)")
-          .attr("y", 0)
-          .attr("x",-hauteur/2)
-          .style("text-anchor","middle")
-          .text(ord);
+      canevas.append("text")
+        .attr("class","legende")
+        .attr("transform","rotate(-90)")
+        .attr("y", 0)
+        .attr("x",-hauteur/2)
+        .style("text-anchor","middle")
+        .text(ord);
 
       }
 
       graphe("kmSemaine","accidents85");
 
-      function updatePeriode(){
+      /*function updatePeriode(){
       if(compteur==0){graphe("kmSemaine",tableau[compteur+3])}
       else{console.log("Else")}
-      }
+      }*/
 
       let tableau = ["accidents85","accidentsMortels85","morts85",
                       "accidents00","accidentsMortels00","morts00"];
 
 
 
-      /*canevas.append("text")
+      canevas.append("text")
         .attr("x", (largeur / 2))             
-        .attr("y", marge)
+        .attr("y", hauteur / 2)
         .attr("text-anchor", "middle")  
         .style("font-size","12px")
         .style("text-decoration", "underline")  
-        .text("Graphique");*/
+        .text("Graphique");
 
   });
 
