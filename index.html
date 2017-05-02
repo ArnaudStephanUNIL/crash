@@ -6,8 +6,8 @@
   <title>Crash d'avions 1.0</title>
 </head>
 
-<select>
-</select>
+<select id="selectX"></select>
+<select id="selectY"></select>
 
 <body>
 
@@ -52,11 +52,6 @@ div.tooltip {
 
 </style>
 
-  <div id="option">
-      <input name="updateButton" 
-             type="button" 
-             value="Changement de Période">
-  </div>
   
   <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.min.js'></script>
   <script>
@@ -76,49 +71,47 @@ div.tooltip {
       let marge = 30;
       let largeur = (window.innerWidth - (2 * marge))/2;
       let hauteur = (window.innerHeight - (2 * marge))/2;
-      let compteur = 0;
+      //Initialisation des deux variables avec déjà une certaine valeur
+      let variableX = "kmSemaine";
+      let variableY = "accidents";
 
-      //Création du menu pour choisir la variable en Y
 
-      let options = ["accidents85","accidents00","accidentsMortels85","accidentsMortels00"];
+
+      //Unification de la période, on va maintenant de 85 à 2014 et basta
+      for (var i = 0; i <= 55; i++) {
+        data[i].accidents = data[i].accidents85+data[i].accidents00,
+        data[i].accidentsMortels = data[i].accidentsMortels85+data[i].accidentsMortels00,
+        data[i].morts = data[i].morts85+data[i].morts00;
+      }
+
+      let options = ["kmSemaine","accidents","accidentsMortels","morts"];
+
 
       let liste = options.forEach(function(d){
-        d3.select("select")
+        d3.selectAll("select")
           .append("option")
           .attr("value",d)
           .text(d);
       })
 
-      function affiche(){
-        let variableChoisie = d3.select(this).property('value')
-        graphe("kmSemaine",variableChoisie);
+      //Quand on choisit une valeur, on retient la valeur choisie et on lance la fonction graphe avec
+      //cette nouvelle valeur
+      function choixX(){
+        let variableX = d3.select(this).property('value')
+        graphe(variableX,variableY)
       }
 
-      d3.select("select")
-        .on("change",affiche)
+      function choixY(){
+        let variableY = d3.select(this).property('value')
+        graphe(variableX,variableY)
 
+      }
 
-      //Création du menu déroulant
-      /*let liste = data.compagnie.forEach(function(d){
-        d3.select("select")
-          .append("option")
-          .attr("value",d)
-          .text(d);
-})
+      d3.select("#selectX")
+        .on("change",choixX)
 
-      //Changer la sélection
-        d3.select("select")
-          .on("change", affiche);
-
-      function affiche(){
-        let compagnie_choisie = d3.select(this).property('value');  
-      }*/
-
-
-      var echelleCouleur = d3.scaleOrdinal()
-        .domain(["Europe","South America","North America","Asia",
-           "Australia","Africa"])
-        .range([0,1/5,2/5,3/5,4/5,1]);
+      d3.select("#selectY")
+        .on("change",choixY)
 
   		let canevas = d3.select("body")
   			.append("svg")
@@ -141,13 +134,9 @@ div.tooltip {
 
 
 /*Fonction qui prend un argument à mettre en X, un argument en Y
-et qui crée un graphique en fonction de ces deux aguments. On donne aussi deux arguments
-pour créer les échelles
-Actuellement le compteur ne sert à rien, mais il est utile si on veut mettre deux jeux de données
-sur le même canevas (par exemple les deux périodes temporelles en même temps)*/
+et qui crée une visualisation en fonction de ces deux argumetns*/
 
      function graphe(abs,ord){
-        compteur++;
 
         var echelleX = d3.scaleLinear()
           .domain([0,d3.max(data,d=>d[abs])])
@@ -157,17 +146,21 @@ sur le même canevas (par exemple les deux périodes temporelles en même temps)
           .domain([0,d3.max(data,d=>d[ord])])
           .range([hauteur-marge,marge]);
 
-        var cercles = canevas.selectAll("circle")
-          .data(data)
-          .enter()
+        var echelleCouleur = d3.scaleOrdinal()
+          .domain(["Europe","South America","North America","Asia",
+             "Australia","Africa"])
+          .range([0,1/5,2/5,3/5,4/5,1]);
+
+        var cercles = canevas.selectAll("circle").data(data);
+
+          cercles.enter()
           .append("circle")
-            //.attr("class",`c${compteur}`)
             .attr("cx",d=>echelleX(d[abs]))
             .attr("cy",d=>echelleY(d[ord]))
             .attr("r",4)
             .attr("opacity",.9)
             .attr("fill",d=>d3.interpolateCool(echelleCouleur(d.continent)))
-        .on("mouseover",function(d){
+          .on("mouseover",function(d){
             d3.select(this)
               .attr("r",6)
             div.transition()
@@ -177,7 +170,7 @@ sur le même canevas (par exemple les deux périodes temporelles en même temps)
               .style("left", (d3.event.pageX) + "px")   
               .style("top", (d3.event.pageY - 28) + "px");
         })
-        .on("mouseout",function(d){
+          .on("mouseout",function(d){
             d3.select(this)
               .attr("r",4)
             div.transition()
@@ -185,12 +178,9 @@ sur le même canevas (par exemple les deux périodes temporelles en même temps)
               .style("opacity",0);
         });
 
+//Création des deux axes
       var axeX = d3.axisBottom(echelleX);
       var axeY = d3.axisLeft(echelleY);
-
-// ajouter comportement au bouton
-      /*d3.select("input")
-        .on("click",updatePeriode);*/
 
 //Axe X avec la légende
       canevas.append("g")
@@ -218,15 +208,7 @@ sur le même canevas (par exemple les deux périodes temporelles en même temps)
 
       }
 
-      graphe("kmSemaine","accidents85");
-
-      /*function updatePeriode(){
-      if(compteur==0){graphe("kmSemaine",tableau[compteur+3])}
-      else{console.log("Else")}
-      }*/
-
-      let tableau = ["accidents85","accidentsMortels85","morts85",
-                      "accidents00","accidentsMortels00","morts00"];
+      graphe(variableX,variableY);
 
 
 
