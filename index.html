@@ -8,6 +8,7 @@
 
 <select id="selectX"></select>
 <select id="selectY"></select>
+<select id="selectCompagnie"></select>
 
 <body>
 
@@ -74,6 +75,9 @@ div.tooltip {
       //Initialisation des deux variables avec déjà une certaine valeur
       let variableX = "kmSemaine";
       let variableY = "accidents";
+      let compagnieChoisie = "Air France";
+      let optionsCompagnie = [];
+      let optionsAxes = ["kmSemaine","accidents","accidentsMortels","morts"];
 
 
 
@@ -81,14 +85,27 @@ div.tooltip {
       for (var i = 0; i <= 55; i++) {
         data[i].accidents = data[i].accidents85+data[i].accidents00,
         data[i].accidentsMortels = data[i].accidentsMortels85+data[i].accidentsMortels00,
-        data[i].morts = data[i].morts85+data[i].morts00;
+        data[i].morts = data[i].morts85+data[i].morts00,
+        optionsCompagnie[i] = data[i].compagnie;
       }
 
-      let options = ["kmSemaine","accidents","accidentsMortels","morts"];
 
+      optionsAxes.forEach(function(d){
+        d3.select("#selectX")
+          .append("option")
+          .attr("value",d)
+          .text(d);
+      })
 
-      let liste = options.forEach(function(d){
-        d3.selectAll("select")
+      optionsAxes.forEach(function(d){
+        d3.select("#selectY")
+          .append("option")
+          .attr("value",d)
+          .text(d);
+      })
+
+      optionsCompagnie.forEach(function(d){
+        d3.select("#selectCompagnie")
           .append("option")
           .attr("value",d)
           .text(d);
@@ -97,18 +114,21 @@ div.tooltip {
       //Quand on choisit une valeur, on retient la valeur choisie et on lance la fonction graphe avec
       //cette nouvelle valeur
       function choixX(){
-        let variableX = d3.select(this).property('value')
-        console.log(variableX)
-        console.log(variableY)
+        let variableX = d3.select("#selectX").property('value')
+        let variableY = d3.select("#selectY").property('value')
         graphe(variableX,variableY)
       }
 
       function choixY(){
-        let variableY = d3.select(this).property('value')
-        console.log(variableX)
-        console.log(variableY)
+        let variableX = d3.select("#selectX").property('value')
+        let variableY = d3.select("#selectY").property('value')
         graphe(variableX,variableY)
 
+      }
+
+      function choixCompagnie(){
+        let compagnieChoisie = d3.select(this).property('value')
+        console.log(compagnieChoisie)
       }
 
       d3.select("#selectX")
@@ -116,6 +136,9 @@ div.tooltip {
 
       d3.select("#selectY")
         .on("change",choixY)
+
+      d3.select("#selectCompagnie")
+        .on("change",choixCompagnie)
 
   		let canevas = d3.select("body")
   			.append("svg")
