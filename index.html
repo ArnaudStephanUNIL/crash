@@ -260,7 +260,7 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
         .attr("x", (largeur/2))             
         .attr("y", marge/2)
         .attr("text-anchor", "middle")    
-        .text(abs+" en fonction de "+ord);
+        .text(ord+" en fonction de "+abs);
 
     
 //Rafraîchissement des axes, des légendes et du titre
@@ -277,7 +277,7 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
         .text(ord);
 
       canevas.selectAll(".titre")
-        .text(abs+" en fonction de "+ord);
+        .text(ord+" en fonction de "+abs);
       
       }
 
