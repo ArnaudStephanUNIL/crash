@@ -224,7 +224,7 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
 //Axe X avec la légende
       canevas.append("g")
         .attr("transform",`translate(0,${hauteur-marge})`)
-        .call(axeX.ticks(6,"s"));
+        .call(axeX.tickFormat(d3.format(",.0s")));
 
       canevas.append("text")
         .attr("class","legende")
@@ -235,7 +235,7 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
 //Axe Y avec sa légende
       canevas.append("g")
         .attr("transform",`translate(${marge},0)`)
-        .call(axeY.ticks(6,"s"));
+        .call(axeY.tickFormat(d3.format(",.0s")));
 
       canevas.append("text")
         .attr("class","legende")
