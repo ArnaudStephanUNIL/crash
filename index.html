@@ -14,7 +14,13 @@
 
 <style>
 
-.legende {
+.titre {
+  font: 10px sans-serif; }
+
+.axeVerticalLegende {
+  font: 10px sans-serif; }
+
+.axeHorizontalLegende {
   font: 10px sans-serif; }
 
 body {
@@ -218,16 +224,18 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
         })
 
 //Création des deux axes
+
       var axeX = d3.axisBottom(echelleX);
       var axeY = d3.axisLeft(echelleY);
 
 //Axe X avec la légende
       canevas.append("g")
         .attr("transform",`translate(0,${hauteur-marge})`)
+        .attr("class","axeHorizontal")
         .call(axeX.tickFormat(d3.format(",.0s")));
 
       canevas.append("text")
-        .attr("class","legende")
+        .attr("class","axeHorizontalLegende")
         .attr("transform", "translate(" + (largeur / 2) + " ," + (hauteur + marge/2) + ")")
         .style("text-anchor","middle")
         .text(abs);
@@ -235,23 +243,41 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
 //Axe Y avec sa légende
       canevas.append("g")
         .attr("transform",`translate(${marge},0)`)
+        .attr("class","axeVertical")
         .call(axeY.tickFormat(d3.format(",.0s")));
 
       canevas.append("text")
-        .attr("class","legende")
+        .attr("class","axeVerticalLegende")
         .attr("transform","rotate(-90)")
         .attr("y", 0)
         .attr("x",-hauteur/2)
         .style("text-anchor","middle")
         .text(ord);
 
-      canevas.append("text")
-        .attr("class","legende")
+    
+//Rafraîchissement des axes
+      canevas.selectAll("g.axeHorizontal")
+        .call(axeX.tickFormat(d3.format(",.00s")));
+
+      canevas.selectAll("g.axeHorizontalLegende")
+        .text(abs);
+
+      canevas.selectAll("g.axeVertical")
+        .call(axeY.tickFormat(d3.format(",.00s")));
+
+      canevas.selectAll("g.axeVerticalLegende")
+        .text(ord);
+      
+
+
+
+//Titre du graphique
+      /*canevas.append("text")
+        .attr("class","titre")
         .attr("x", (largeur/2))             
         .attr("y", marge/2)
         .attr("text-anchor", "middle")    
-        .text(abs+" en fonction de "+ord);
-
+        .text(abs+" en fonction de "+ord);*/
       }
 
 
