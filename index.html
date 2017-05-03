@@ -254,30 +254,31 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
         .style("text-anchor","middle")
         .text(ord);
 
-    
-//Rafraîchissement des axes
-      canevas.selectAll("g.axeHorizontal")
-        .call(axeX.tickFormat(d3.format(",.00s")));
-
-      canevas.selectAll("g.axeHorizontalLegende")
-        .text(abs);
-
-      canevas.selectAll("g.axeVertical")
-        .call(axeY.tickFormat(d3.format(",.00s")));
-
-      canevas.selectAll("g.axeVerticalLegende")
-        .text(ord);
-      
-
-
-
 //Titre du graphique
-      /*canevas.append("text")
+      canevas.append("text")
         .attr("class","titre")
         .attr("x", (largeur/2))             
         .attr("y", marge/2)
         .attr("text-anchor", "middle")    
-        .text(abs+" en fonction de "+ord);*/
+        .text(abs+" en fonction de "+ord);
+
+    
+//Rafraîchissement des axes, des légendes et du titre
+      canevas.selectAll(".axeHorizontal")
+        .call(axeX.tickFormat(d3.format(",.00s")));
+
+      canevas.selectAll(".axeHorizontalLegende")
+        .text(abs);
+
+      canevas.selectAll(".axeVertical")
+        .call(axeY.tickFormat(d3.format(",.00s")));
+
+      canevas.selectAll(".axeVerticalLegende")
+        .text(ord);
+
+      canevas.selectAll(".titre")
+        .text(abs+" en fonction de "+ord);
+      
       }
 
 
