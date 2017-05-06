@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Crash d'avions 1.0</title>
+  <title>Crash d'avions 2.0</title>
 </head>
 
 <!--Création des classes de select pour les drop-down menus-->
@@ -96,9 +96,7 @@ div.tooltip {
         {"kmSemaine":"kmSemaine","accidents":"accidents","accidentsMortels":"accidentsMortels","morts":"morts"}
       ]
 
-      console.log(options)
-
-      //On réorganise les données grâce à d3.nest (cf. Mister Nester pour comprendre)
+      //On réorganise les données grâce à d3.nest (cf. Mister Nester pour comprendre) (attention il manque un $)
       let nestCompagnies = d3.nest()
       .key(d=>d.compagnie)
       .map(data);
@@ -111,7 +109,7 @@ div.tooltip {
         optionsCompagnie[i] = data[i].compagnie;
       }
 
-
+      //Création des menus déroulants
       optionsAxes.forEach(function(d){
         d3.select("#selectX")
           .append("option")
@@ -162,8 +160,6 @@ div.tooltip {
 
       function choixCompagnie(){
         var compagnieChoisie = "$"+d3.select(this).property('value')
-        console.log(compagnieChoisie);
-        console.log(nestCompagnies[compagnieChoisie][0]["kmSemaine"])
         graphe2(compagnieChoisie);
       }
 
@@ -188,6 +184,7 @@ div.tooltip {
       d3.select("#selectPeriode")
         .on("change",choixPeriode)
 
+      //Création des zones pour les graphes
   		let canevas = d3.select("body")
   			.append("svg")
   			 .attr("height", hauteur + 2*marge)
@@ -202,6 +199,7 @@ div.tooltip {
          .append("g")
          .attr("transform", "translate(" + marge + "," + marge + ")");
 
+      //Création du tooltip
       let div = d3.select("body").append("div") 
         .attr("class", "tooltip")       
         .style("opacity", 0);
@@ -423,7 +421,7 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
               .duration(200)
               .style("opacity",.9)
             div.html("<b>Accidents chez </b>"+
-              nestCompagnies[funcComp][0]["compagnie"]+" : "+Math.round(nestCompagnies[funcComp][0]["accidents"]))
+              nestCompagnies[funcComp][0]["compagnie"]+" : "+nestCompagnies[funcComp][0]["accidents"])
               .style("left", (d3.event.pageX) + "px")   
               .style("top", (d3.event.pageY - 28) + "px");
         })
@@ -439,7 +437,7 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
               .duration(200)
               .style("opacity",.9)
             div.html("<b>Accidents mortels chez </b>"+
-              nestCompagnies[funcComp][0]["compagnie"]+" : "+Math.round(nestCompagnies[funcComp][0]["accidentsMortels"]))
+              nestCompagnies[funcComp][0]["compagnie"]+" : "+nestCompagnies[funcComp][0]["accidentsMortels"])
               .style("left", (d3.event.pageX) + "px")   
               .style("top", (d3.event.pageY - 28) + "px");
         })
