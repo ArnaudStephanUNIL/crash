@@ -89,7 +89,6 @@ div.tooltip {
       let optionsAxes = ["kmSemaine","accidents","accidentsMortels","morts"];
       let optionsPeriode = ["1985-2000","2000-2014","1985-2014"];
       let periodeChoisie = 0;
-
       let options = [
         {"kmSemaine":"kmSemaine","accidents":"accidents85","accidentsMortels":"accidentsMortels85","morts":"morts85"},
         {"kmSemaine":"kmSemaine","accidents":"accidents00","accidentsMortels":"accidentsMortels00","morts":"morts00"},
@@ -160,7 +159,12 @@ div.tooltip {
 
       function choixCompagnie(){
         var compagnieChoisie = "$"+d3.select(this).property('value')
-        graphe2(compagnieChoisie);
+        graphe2(compagnieChoisie)
+        //Et on relance la fonction graphe pour colorier le point correspondant en rouge
+        var indexPeriode = d3.select("#selectPeriode").property('value')
+        var abs = options[indexPeriode][d3.select("#selectX").property('value')]
+        var ord = options[indexPeriode][d3.select("#selectY").property('value')]
+        graphe(abs,ord);
       }
 
       function choixPeriode(){
@@ -232,14 +236,20 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
             .attr("cy",d=>echelleY(0))
             .attr("r",0)
             .attr("opacity",0)
-
+        //Les deux "if" servent à colorier en rouge le point qui correspond à la compagnie choisie par le user
           cercles.transition()
             .duration(500)
             .attr("cx",d=>echelleX(d[abs]))
             .attr("cy",d=>echelleY(d[ord]))
             .attr("r",4)
-            .attr("opacity",.9)
-            .attr("fill",d=>d3.interpolateCool(echelleCouleur(d.continent)))
+            .attr("opacity",function(d){
+              if(d.compagnie==d3.select("#selectCompagnie").property('value')){return 1}
+              else{return 0.4}
+              ;})
+            .attr("fill",function(d){
+              if(d.compagnie==d3.select("#selectCompagnie").property('value')){return "red"}
+              else{return d3.interpolateCool(echelleCouleur(d.continent))}
+            ;})
 
           cercles.exit()
             .remove()
