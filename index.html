@@ -9,6 +9,7 @@
 <!--Création des classes de select pour les drop-down menus-->
 <select id="selectX"></select>
 <select id="selectY"></select>
+<select id="selectPeriode"></select>
 <select id="selectCompagnie"></select>
 
 <!--Création des 4 classes de rectangles pour le choix de la compagnie-->
@@ -86,6 +87,16 @@ div.tooltip {
       let hauteur = (window.innerHeight - (2 * marge))/2;
       let optionsCompagnie = [];
       let optionsAxes = ["kmSemaine","accidents","accidentsMortels","morts"];
+      let optionsPeriode = ["1985-2000","2000-2014","1985-2014"];
+      let periodeChoisie = 0;
+
+      let options = [
+        {"kmSemaine":"kmSemaine","accidents":"accidents85","accidentsMortels":"accidentsMortels85","morts":"morts85"},
+        {"kmSemaine":"kmSemaine","accidents":"accidents00","accidentsMortels":"accidentsMortels00","morts":"morts00"},
+        {"kmSemaine":"kmSemaine","accidents":"accidents","accidentsMortels":"accidentsMortels","morts":"morts"}
+      ]
+
+      console.log(options)
 
       //On réorganise les données grâce à d3.nest (cf. Mister Nester pour comprendre)
       let nestCompagnies = d3.nest()
@@ -115,6 +126,13 @@ div.tooltip {
           .text(d);
       })
 
+      optionsPeriode.forEach(function(d,i){
+        d3.select("#selectPeriode")
+          .append("option")
+          .attr("value",i)
+          .text(d);
+      })
+
       optionsCompagnie.forEach(function(d){
         d3.select("#selectCompagnie")
           .append("option")
@@ -125,15 +143,21 @@ div.tooltip {
       //Quand on choisit une valeur, on retient la valeur choisie et on lance la fonction graphe avec
       //cette nouvelle valeur
       function choixX(){
+        var indexPeriode = d3.select("#selectPeriode").property('value')
         var variableX = d3.select(this).property('value')
         var variableY = d3.select("#selectY").property('value')
-        graphe(variableX,variableY)
+        var abs = options[indexPeriode][variableX]
+        var ord = options[indexPeriode][variableY]
+        graphe(abs,ord)
       }
 
       function choixY(){
+        var indexPeriode = d3.select("#selectPeriode").property('value')
         var variableX = d3.select("#selectX").property('value')
         var variableY = d3.select(this).property('value')
-        graphe(variableX,variableY)
+        var abs = options[indexPeriode][variableX]
+        var ord = options[indexPeriode][variableY]
+        graphe(abs,ord)
       }
 
       function choixCompagnie(){
@@ -141,6 +165,15 @@ div.tooltip {
         console.log(compagnieChoisie);
         console.log(nestCompagnies[compagnieChoisie][0]["kmSemaine"])
         graphe2(compagnieChoisie);
+      }
+
+      function choixPeriode(){
+        var indexPeriode = d3.select(this).property('value')
+        var variableX = d3.select("#selectX").property('value')
+        var variableY = d3.select("#selectY").property('value')
+        var abs = options[indexPeriode][variableX]
+        var ord = options[indexPeriode][variableY]
+        graphe(abs,ord);
       }
 
       d3.select("#selectX")
@@ -151,6 +184,9 @@ div.tooltip {
 
       d3.select("#selectCompagnie")
         .on("change",choixCompagnie)
+
+      d3.select("#selectPeriode")
+        .on("change",choixPeriode)
 
   		let canevas = d3.select("body")
   			.append("svg")
