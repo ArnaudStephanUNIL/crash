@@ -6,9 +6,18 @@
   <title>Crash d'avions 1.0</title>
 </head>
 
+<!--Création des classes de select pour les drop-down menus-->
 <select id="selectX"></select>
 <select id="selectY"></select>
 <select id="selectCompagnie"></select>
+
+<!--Création des 4 classes de rectangles pour le choix de la compagnie-->
+<g>
+  <rect class="rect1"></rect>
+  <rect class="rect2"></rect>
+  <rect class="rect3"></rect>
+  <rect class="rect4"></rect>
+</g>
 
 <body>
 
@@ -75,10 +84,6 @@ div.tooltip {
       let marge = 30;
       let largeur = (window.innerWidth - (2 * marge))/2;
       let hauteur = (window.innerHeight - (2 * marge))/2;
-      //Initialisation des variables avec déjà une certaine valeur
-      let variableX = "kmSemaine";
-      let variableY = "accidents";
-      let compagnieChoisie = "$Air France";
       let optionsCompagnie = [];
       let optionsAxes = ["kmSemaine","accidents","accidentsMortels","morts"];
 
@@ -87,7 +92,7 @@ div.tooltip {
       .key(d=>d.compagnie)
       .map(data);
 
-      //Addition des deux périodes
+      //Addition des deux périodes et création de la liste des compagnies
       for (var i = 0; i <= 55; i++) {
         data[i].accidents = data[i].accidents85+data[i].accidents00,
         data[i].accidentsMortels = data[i].accidentsMortels85+data[i].accidentsMortels00,
@@ -251,7 +256,7 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
         .attr("transform","rotate(-90)")
         .attr("y", 0)
         .attr("x",-hauteur/2)
-        .style("text-anchor","middle")
+        .style("text-anchor","end")
         .text(ord);
 
 //Titre du graphique
@@ -289,7 +294,9 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
 
         var echelleX = d3.scaleLinear()
           .domain([0,d3.max(data,d=>d.accidents)])
-          .range([marge,largeur-marge]);
+          .range([0,largeur-marge]);
+
+        var axeX = d3.axisBottom(echelleX);
 
         var gap = 10;
         var hauteurRect = hauteur/10;
@@ -297,92 +304,133 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
         var accidentsMoyens = d3.mean(data,d=>d.accidents);
         var accidentsMortelsMoyens = d3.mean(data,d=>d.accidentsMortels);
 
-        //Création des deux barres de référence
-        var rectAccidentsMoyens = canevas2.append("rect")
-          //.attr("class","immobile")
+        var g = canevas2.selectAll("g").data(data);
+
+        var gEnter = g.enter().append("g");
+        //Référence des accidents moyens
+        gEnter.append("rect").attr("class","rect1")
           .attr("opacity",0.5)
           .attr("x",marge)
           .attr("y",marge)
-          .attr("width",echelleX(accidentsMoyens))
           .attr("height",hauteurRect)
+          .attr("width",echelleX(accidentsMoyens))
           .attr("fill","#b3e6ff")
           .on("mouseover",function(d){
-            d3.select(this)
-            .attr("opacity",0.9)
             div.transition()
               .duration(200)
               .style("opacity",.9)
-            div.html("<b>Accidents moyens : </b>"+Math.round(accidentsMoyens))
+            div.html("<b>Nombre moyen d'accidents : </b>"+Math.round(accidentsMoyens))
               .style("left", (d3.event.pageX) + "px")   
               .style("top", (d3.event.pageY - 28) + "px");
         })
           .on("mouseout",function(d){
-            d3.select(this)
-            .attr("opacity",0.5)
             div.transition()
               .duration(200)
               .style("opacity",0);
-        });
-
-        var rectangles = canevas2.selectAll("rect").data(data);
-
-//nestCompagnies[compagnieChoisie][0]["kmSemaine"]
-          rectangles.enter()
-            .append("rect")
-            //Les rectangles qui arrivent sont invisibles
-            .attr("opacity",0.5)
-            .attr("x",marge)
-            .attr("y",marge+hauteurRect+gap)
-            .attr("width",0)//echelleX(nestCompagnies[funcComp][0]["accidents"]))
-            .attr("height",hauteurRect)
-            .attr("fill","#b3e6ff");
-
-          rectangles.transition()
-            .duration(500)
-            .attr("opacity",0.5)
-            .attr("x",marge)
-            .attr("y",marge+hauteurRect+gap)
-            .attr("width",echelleX(nestCompagnies[funcComp][0]["accidents"]))
-            .attr("height",hauteurRect)
-            .attr("fill","#b3e6ff");
-
-        var rectAccidentsMortelsMoyens = canevas2.append("rect")
-          //.attr("class","immobile")
+        })
+        //Référence des accidents mortels moyens
+        gEnter.append("rect").attr("class","rect2")
           .attr("opacity",0.5)
           .attr("x",marge)
           .attr("y",marge+2*(hauteurRect+gap))
-          .attr("width",echelleX(accidentsMortelsMoyens))
           .attr("height",hauteurRect)
+          .attr("width",echelleX(accidentsMortelsMoyens))
           .attr("fill","#ffad99")
           .on("mouseover",function(d){
-            d3.select(this)
-            .attr("opacity",0.9)
             div.transition()
               .duration(200)
               .style("opacity",.9)
-            div.html("<b>Accidents mortels moyens : </b>"+Math.round(accidentsMortelsMoyens))
+            div.html("<b>Nombre moyen d'accidents mortels : </b>"+Math.round(accidentsMortelsMoyens))
               .style("left", (d3.event.pageX) + "px")   
               .style("top", (d3.event.pageY - 28) + "px");
         })
           .on("mouseout",function(d){
-            d3.select(this)
-            .attr("opacity",0.5)
             div.transition()
               .duration(200)
               .style("opacity",0);
-        });
+        })
+        //Accidents moyens pour la compagnie sélectionnée
+        gEnter.append("rect").attr("class","rect3")
+          .attr("x",marge)
+          .attr("y",marge+hauteurRect+gap)
+          .attr("width",echelleX(nestCompagnies[funcComp][0]["accidents"]))
+          .attr("height",hauteurRect)
+          .attr("fill","#b3e6ff");
+
+        canevas2.selectAll(".rect3").data(data).transition()
+          .duration(500)
+          .attr("x",marge)
+          .attr("y",marge+hauteurRect+gap)
+          .attr("width",echelleX(nestCompagnies[funcComp][0]["accidents"]))
+          .attr("height",hauteurRect)
+          .attr("fill","#b3e6ff");
+        //Accidents mortels moyens pour la compagnie sélectionée
+        gEnter.append("rect").attr("class","rect4")
+          .attr("x",marge)
+          .attr("y",marge+3*(hauteurRect+gap))
+          .attr("width",echelleX(nestCompagnies[funcComp][0]["accidentsMortels"]))
+          .attr("height",hauteurRect)
+          .attr("fill","#ffad99");
+
+        canevas2.selectAll(".rect4").data(data).transition()
+          .duration(500)
+          .attr("x",marge)
+          .attr("y",marge+3*(hauteurRect+gap))
+          .attr("width",echelleX(nestCompagnies[funcComp][0]["accidentsMortels"]))
+          .attr("height",hauteurRect)
+          .attr("fill","#ffad99");
+
+        //Les tooltips
+        canevas2.selectAll(".rect3").data(data)
+          .on("mouseover",function(d){
+            div.transition()
+              .duration(200)
+              .style("opacity",.9)
+            div.html("<b>Accidents chez </b>"+
+              nestCompagnies[funcComp][0]["compagnie"]+" : "+Math.round(nestCompagnies[funcComp][0]["accidents"]))
+              .style("left", (d3.event.pageX) + "px")   
+              .style("top", (d3.event.pageY - 28) + "px");
+        })
+          .on("mouseout",function(d){
+            div.transition()
+              .duration(200)
+              .style("opacity",0);
+        })
+
+        canevas2.selectAll(".rect4").data(data)
+          .on("mouseover",function(d){
+            div.transition()
+              .duration(200)
+              .style("opacity",.9)
+            div.html("<b>Accidents mortels chez </b>"+
+              nestCompagnies[funcComp][0]["compagnie"]+" : "+Math.round(nestCompagnies[funcComp][0]["accidentsMortels"]))
+              .style("left", (d3.event.pageX) + "px")   
+              .style("top", (d3.event.pageY - 28) + "px");
+        })
+          .on("mouseout",function(d){
+            div.transition()
+              .duration(200)
+              .style("opacity",0);
+        })
+
+        //Axe X
+        canevas2.append("g")
+          .attr("transform",`translate(${marge},${5*hauteurRect+5*gap})`)
+          .call(axeX.tickFormat(d3.format(",.0s")));
+
+        canevas2.append("text")
+          .attr("class","axeHorizontalLegende")
+          .attr("transform", "translate(" + (largeur / 2) + " ," + (6*hauteurRect+6*gap) + ")")
+          .style("text-anchor","middle")
+          .text("Nb d'accidents");
 
 
-          /*rectangles.enter()
-            .append("rect")
-            .attr("x")
-            .attr("y")
-            .attr()*/
+
       }
 
+//On lance directement les fonctions pour qu'il y ait quelque chose en arrivant sur la page
   graphe("kmSemaine","kmSemaine");
-  graphe2(compagnieChoisie);
-  //graphe2();
+  graphe2("$Aer Lingus");
 
 
   });
