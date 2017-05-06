@@ -46,14 +46,11 @@ path {
 
 div.tooltip { 
     position: absolute;     
-    text-align: center;     
-    /*width: 80px;          
-    height: 40px;*/        
+    text-align: center;            
     padding: 2px;       
     font: 12px sans-serif;    
-    /*background: #ffcc99;*/
-    border: 0px;    
-    border-radius: 8px;     
+    background: #ffffff;
+    border-radius: 4px;     
     pointer-events: none;     
 }
 
@@ -137,7 +134,8 @@ div.tooltip {
       function choixCompagnie(){
         var compagnieChoisie = "$"+d3.select(this).property('value')
         console.log(compagnieChoisie);
-        console.log(nestCompagnies[compagnieChoisie][0]["kmSemaine"]);
+        console.log(nestCompagnies[compagnieChoisie][0]["kmSemaine"])
+        graphe2(compagnieChoisie);
       }
 
       d3.select("#selectX")
@@ -287,8 +285,104 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
       
       }
 
+      function graphe2(funcComp){
 
-      //graphe("kmSemaine","kmSemaine");
+        var echelleX = d3.scaleLinear()
+          .domain([0,d3.max(data,d=>d.accidents)])
+          .range([marge,largeur-marge]);
+
+        var gap = 10;
+        var hauteurRect = hauteur/10;
+
+        var accidentsMoyens = d3.mean(data,d=>d.accidents);
+        var accidentsMortelsMoyens = d3.mean(data,d=>d.accidentsMortels);
+
+        //Création des deux barres de référence
+        var rectAccidentsMoyens = canevas2.append("rect")
+          //.attr("class","immobile")
+          .attr("opacity",0.5)
+          .attr("x",marge)
+          .attr("y",marge)
+          .attr("width",echelleX(accidentsMoyens))
+          .attr("height",hauteurRect)
+          .attr("fill","#b3e6ff")
+          .on("mouseover",function(d){
+            d3.select(this)
+            .attr("opacity",0.9)
+            div.transition()
+              .duration(200)
+              .style("opacity",.9)
+            div.html("<b>Accidents moyens : </b>"+Math.round(accidentsMoyens))
+              .style("left", (d3.event.pageX) + "px")   
+              .style("top", (d3.event.pageY - 28) + "px");
+        })
+          .on("mouseout",function(d){
+            d3.select(this)
+            .attr("opacity",0.5)
+            div.transition()
+              .duration(200)
+              .style("opacity",0);
+        });
+
+        var rectangles = canevas2.selectAll("rect").data(data);
+
+//nestCompagnies[compagnieChoisie][0]["kmSemaine"]
+          rectangles.enter()
+            .append("rect")
+            //Les rectangles qui arrivent sont invisibles
+            .attr("opacity",0.5)
+            .attr("x",marge)
+            .attr("y",marge+hauteurRect+gap)
+            .attr("width",0)//echelleX(nestCompagnies[funcComp][0]["accidents"]))
+            .attr("height",hauteurRect)
+            .attr("fill","#b3e6ff");
+
+          rectangles.transition()
+            .duration(500)
+            .attr("opacity",0.5)
+            .attr("x",marge)
+            .attr("y",marge+hauteurRect+gap)
+            .attr("width",echelleX(nestCompagnies[funcComp][0]["accidents"]))
+            .attr("height",hauteurRect)
+            .attr("fill","#b3e6ff");
+
+        var rectAccidentsMortelsMoyens = canevas2.append("rect")
+          //.attr("class","immobile")
+          .attr("opacity",0.5)
+          .attr("x",marge)
+          .attr("y",marge+2*(hauteurRect+gap))
+          .attr("width",echelleX(accidentsMortelsMoyens))
+          .attr("height",hauteurRect)
+          .attr("fill","#ffad99")
+          .on("mouseover",function(d){
+            d3.select(this)
+            .attr("opacity",0.9)
+            div.transition()
+              .duration(200)
+              .style("opacity",.9)
+            div.html("<b>Accidents mortels moyens : </b>"+Math.round(accidentsMortelsMoyens))
+              .style("left", (d3.event.pageX) + "px")   
+              .style("top", (d3.event.pageY - 28) + "px");
+        })
+          .on("mouseout",function(d){
+            d3.select(this)
+            .attr("opacity",0.5)
+            div.transition()
+              .duration(200)
+              .style("opacity",0);
+        });
+
+
+          /*rectangles.enter()
+            .append("rect")
+            .attr("x")
+            .attr("y")
+            .attr()*/
+      }
+
+  graphe("kmSemaine","kmSemaine");
+  graphe2(compagnieChoisie);
+  //graphe2();
 
 
   });
