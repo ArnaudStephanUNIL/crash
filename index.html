@@ -78,14 +78,17 @@ div.tooltip {
       let marge = 30;
       let largeur = (window.innerWidth - (2 * marge))/2;
       let hauteur = (window.innerHeight - (2 * marge))/2;
-      //Initialisation des deux variables avec déjà une certaine valeur
+      //Initialisation des variables avec déjà une certaine valeur
       let variableX = "kmSemaine";
       let variableY = "accidents";
-      let compagnieChoisie = "Air France";
+      let compagnieChoisie = "$Air France";
       let optionsCompagnie = [];
       let optionsAxes = ["kmSemaine","accidents","accidentsMortels","morts"];
 
-
+      //On réorganise les données grâce à d3.nest (cf. Mister Nester pour comprendre)
+      let nestCompagnies = d3.nest()
+      .key(d=>d.compagnie)
+      .map(data);
 
       //Addition des deux périodes
       for (var i = 0; i <= 55; i++) {
@@ -120,22 +123,21 @@ div.tooltip {
       //Quand on choisit une valeur, on retient la valeur choisie et on lance la fonction graphe avec
       //cette nouvelle valeur
       function choixX(){
-        let variableX = d3.select(this).property('value')
-        let variableY = d3.select("#selectY").property('value')
+        var variableX = d3.select(this).property('value')
+        var variableY = d3.select("#selectY").property('value')
         graphe(variableX,variableY)
       }
 
       function choixY(){
-        let variableX = d3.select("#selectX").property('value')
-        let variableY = d3.select(this).property('value')
+        var variableX = d3.select("#selectX").property('value')
+        var variableY = d3.select(this).property('value')
         graphe(variableX,variableY)
-
       }
 
       function choixCompagnie(){
-        let compagnieChoisie = d3.select(this).property('value')
-        console.log(compagnieChoisie)
-        console.log(data[compagnieChoisie].accidents);
+        var compagnieChoisie = "$"+d3.select(this).property('value')
+        console.log(compagnieChoisie);
+        console.log(nestCompagnies[compagnieChoisie][0]["kmSemaine"]);
       }
 
       d3.select("#selectX")
@@ -265,13 +267,17 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
     
 //Rafraîchissement des axes, des légendes et du titre
       canevas.selectAll(".axeHorizontal")
-        .call(axeX.tickFormat(d3.format(",.00s")));
+        .call(axeX
+          .ticks(4)
+          .tickFormat(d3.format(",.00s")));
 
       canevas.selectAll(".axeHorizontalLegende")
         .text(abs);
 
       canevas.selectAll(".axeVertical")
-        .call(axeY.tickFormat(d3.format(",.00s")));
+        .call(axeY
+          .ticks(4)
+          .tickFormat(d3.format(",.00s")));
 
       canevas.selectAll(".axeVerticalLegende")
         .text(ord);
@@ -282,7 +288,7 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
       }
 
 
-      graphe("kmSemaine","kmSemaine");
+      //graphe("kmSemaine","kmSemaine");
 
 
   });
