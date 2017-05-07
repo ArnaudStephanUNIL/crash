@@ -159,6 +159,8 @@ div.tooltip {
 
       function choixCompagnie(){
         var compagnieChoisie = "$"+d3.select(this).property('value')
+        //Easter egg Joris Delacroix
+        if(compagnieChoisie == "$Air France"){window.open("https:www.youtube.com/watch?v=V4n6OjoPuJc")}
         graphe2(compagnieChoisie)
         //Et on relance la fonction graphe pour colorier le point correspondant en rouge
         var indexPeriode = d3.select("#selectPeriode").property('value')
@@ -169,10 +171,8 @@ div.tooltip {
 
       function choixPeriode(){
         var indexPeriode = d3.select(this).property('value')
-        var variableX = d3.select("#selectX").property('value')
-        var variableY = d3.select("#selectY").property('value')
-        var abs = options[indexPeriode][variableX]
-        var ord = options[indexPeriode][variableY]
+        var abs = options[indexPeriode][d3.select("#selectX").property('value')]
+        var ord = options[indexPeriode][d3.select("#selectY").property('value')]
         graphe(abs,ord);
       }
 
