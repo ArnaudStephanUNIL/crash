@@ -215,6 +215,32 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
 
      function graphe(abs,ord){
 
+      //Initialisation de la régression linéaire
+
+        var lr = {};
+        var n = data.length;
+        var sum_x = 0;
+        var sum_y = 0;
+        var sum_xy = 0;
+        var sum_xx = 0;
+        var sum_yy = 0;
+        var max = d3.max(data,d=>d[abs]);
+        
+        for (var i = 0; i < data.length; i++) {
+            sum_x += data[i][abs];
+            sum_y += data[i][ord];
+            sum_xy += (data[i][abs]*data[i][ord]);
+            sum_xx += (data[i][abs]*data[i][abs]);
+            sum_yy += (data[i][ord]*data[i][ord]);
+        } 
+        
+        lr['slope'] = (n * sum_xy - sum_x * sum_y) / (n*sum_xx - sum_x * sum_x);
+        lr['intercept'] = (sum_y - lr.slope * sum_x)/n;
+        lr['r2'] = Math.pow((n*sum_xy - sum_x*sum_y)/
+                            Math.sqrt((n*sum_xx-sum_x*sum_x)*(n*sum_yy-sum_y*sum_y)),2);
+
+
+      //Initialisation des échelles
         var echelleX = d3.scaleLinear()
           .domain([0,d3.max(data,d=>d[abs])])
           .range([marge,largeur-marge]);
@@ -228,7 +254,10 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
              "Australia","Africa"])
           .range([0,1/5,2/5,3/5,4/5,1]);
 
+      //Initialisation des cercles et de la ligne pour la régression
         var cercles = canevas.selectAll("circle").data(data);
+        var ligne = canevas.selectAll("line").data(data);
+
         //Au début, tous les cercles sont invisibles en bas à gauche
           cercles.enter()
           .append("circle")
@@ -271,6 +300,23 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
               .duration(200)
               .style("opacity",0);
         })
+
+          //On rajoute la régression, au début elle est blanche et on la voit pas
+          ligne.enter()
+            .append("line")
+            .attr("x1",echelleX(0))
+            .attr("y1",echelleY(lr['intercept']))
+            .attr("x2",echelleX(max))
+            .attr("y2",echelleY((max*lr['slope']) + lr['intercept'] ))
+            .style("stroke", "rgb(255,255,255)");
+
+          ligne.transition()
+            .duration(500)
+            .attr("x1",echelleX(0))
+            .attr("y1",echelleY(lr['intercept']))
+            .attr("x2",echelleX(max))
+            .attr("y2",echelleY((max*lr['slope']) + lr['intercept'] ))
+            .style("stroke", "#eaaa07");
 
 //Création des deux axes
 
@@ -344,7 +390,7 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
 
         var gap = 10;
         var hauteurRect = hauteur/10;
-
+//options[indexPeriode][variableX]
         var accidentsMoyens = d3.mean(data,d=>d.accidents);
         var accidentsMortelsMoyens = d3.mean(data,d=>d.accidentsMortels);
 
@@ -358,7 +404,7 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
           .attr("y",marge)
           .attr("height",hauteurRect)
           .attr("width",echelleX(accidentsMoyens))
-          .attr("fill","#b3e6ff")
+          .attr("fill","#e6f7ff")
           .on("mouseover",function(d){
             div.transition()
               .duration(200)
@@ -379,7 +425,7 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
           .attr("y",marge+2*(hauteurRect+gap))
           .attr("height",hauteurRect)
           .attr("width",echelleX(accidentsMortelsMoyens))
-          .attr("fill","#ffad99")
+          .attr("fill","#ffd6cc")
           .on("mouseover",function(d){
             div.transition()
               .duration(200)
@@ -393,36 +439,36 @@ et qui crée une visualisation en fonction de ces deux argumetns*/
               .duration(200)
               .style("opacity",0);
         })
-        //Accidents moyens pour la compagnie sélectionnée
+        //Accidents pour la compagnie sélectionnée
         gEnter.append("rect").attr("class","rect3")
           .attr("x",marge)
-          .attr("y",marge+hauteurRect+gap)
+          .attr("y",marge+hauteurRect+0.2*gap)
           .attr("width",echelleX(nestCompagnies[funcComp][0]["accidents"]))
           .attr("height",hauteurRect)
-          .attr("fill","#b3e6ff");
+          .attr("fill","#4dc3ff");
 
         canevas2.selectAll(".rect3").data(data).transition()
           .duration(500)
           .attr("x",marge)
-          .attr("y",marge+hauteurRect+gap)
+          .attr("y",marge+hauteurRect+0.2*gap)
           .attr("width",echelleX(nestCompagnies[funcComp][0]["accidents"]))
           .attr("height",hauteurRect)
-          .attr("fill","#b3e6ff");
-        //Accidents mortels moyens pour la compagnie sélectionée
+          .attr("fill","#4dc3ff");
+        //Accidents mortels pour la compagnie sélectionée
         gEnter.append("rect").attr("class","rect4")
           .attr("x",marge)
-          .attr("y",marge+3*(hauteurRect+gap))
+          .attr("y",marge+2*(hauteurRect+gap)+hauteurRect+0.2*gap)
           .attr("width",echelleX(nestCompagnies[funcComp][0]["accidentsMortels"]))
           .attr("height",hauteurRect)
-          .attr("fill","#ffad99");
+          .attr("fill","#ff5c33");
 
         canevas2.selectAll(".rect4").data(data).transition()
           .duration(500)
           .attr("x",marge)
-          .attr("y",marge+3*(hauteurRect+gap))
+          .attr("y",marge+2*(hauteurRect+gap)+hauteurRect+0.2*gap)
           .attr("width",echelleX(nestCompagnies[funcComp][0]["accidentsMortels"]))
           .attr("height",hauteurRect)
-          .attr("fill","#ffad99");
+          .attr("fill","#ff5c33");
 
         //Les tooltips
         canevas2.selectAll(".rect3").data(data)
