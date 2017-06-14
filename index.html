@@ -20,7 +20,7 @@
 
 
 	<h1>
-		Axe des X : <select id="selectX"></select> <br> Axe des Y : <select id="selectY"></select> <br> Période temporelle : <select id="selectPeriode"></select> <br> Compagnie aérienne : <select id="selectCompagnie"></select>
+		Axe horizontal : <select id="selectX"></select> <br> Axe vertical : <select id="selectY"></select> <br> Période temporelle : <select id="selectPeriode"></select> <br> Compagnie aérienne : <select id="selectCompagnie"></select>
 	</h1>
 
 	<style>
@@ -229,8 +229,8 @@
 				var indexPeriode = d3.select("#selectPeriode").property('value')
 				var abs = options[indexPeriode][d3.select("#selectX").property('value')]
 				var ord = options[indexPeriode][d3.select("#selectY").property('value')]
-				var legX = label[variableX]
-				var legY = label[variableY]
+				var legX = label[d3.select("#selectX").property('value')]
+				var legY = label[d3.select("#selectY").property('value')]
 				graphe(abs, ord, legX, legY)
 			}
 
@@ -238,8 +238,8 @@
 				var indexPeriode = d3.select(this).property('value')
 				var abs = options[indexPeriode][d3.select("#selectX").property('value')]
 				var ord = options[indexPeriode][d3.select("#selectY").property('value')]
-				var legX = label[variableX]
-				var legY = label[variableY]
+				var legX = label[d3.select("#selectX").property('value')]
+				var legY = label[d3.select("#selectY").property('value')]
 				graphe(abs, ord, legX, legY)
 			}
 
@@ -448,6 +448,14 @@
 
 				var axeX = d3.axisBottom(echelleX);
 
+				var echelleCouleurAccMort = d3.scaleLinear()
+					.domain([d3.min(data, d => d.accidentsMortels),d3.max(data, d => d.accidentsMortels)])
+					.range(["#ff3333","#b30000"]);
+
+				var echelleCouleurAcc = d3.scaleLinear()
+					.domain([d3.min(data, d => d.accidents),d3.max(data, d => d.accidents)])
+					.range(["#4dc3ff","#0088cc"]);
+
 				var gap = 10;
 				var hauteurRect = hauteur / 10;
 				var accidentsMoyens = d3.mean(data, d => d.accidents);
@@ -504,7 +512,7 @@
 					.attr("y", marge + hauteurRect + 0.2 * gap)
 					.attr("width", echelleX(nestCompagnies[funcComp][0]["accidents"]))
 					.attr("height", hauteurRect)
-					.attr("fill", "#4dc3ff");
+					.attr("fill", echelleCouleurAcc(nestCompagnies[funcComp][0]["accidents"]));
 
 				canevas2.selectAll(".rect3").data(data).transition()
 					.duration(500)
@@ -512,14 +520,14 @@
 					.attr("y", marge + hauteurRect + 0.2 * gap)
 					.attr("width", echelleX(nestCompagnies[funcComp][0]["accidents"]))
 					.attr("height", hauteurRect)
-					.attr("fill", "#4dc3ff");
+					.attr("fill", echelleCouleurAcc(nestCompagnies[funcComp][0]["accidents"]));
 				//Accidents mortels pour la compagnie sélectionée
 				gEnter.append("rect").attr("class", "rect4")
 					.attr("x", marge)
 					.attr("y", marge + 2 * (hauteurRect + gap) + hauteurRect + 0.2 * gap)
 					.attr("width", echelleX(nestCompagnies[funcComp][0]["accidentsMortels"]))
 					.attr("height", hauteurRect)
-					.attr("fill", "#ff5c33");
+					.attr("fill", echelleCouleurAccMort(nestCompagnies[funcComp][0]["accidentsMortels"]));
 
 				canevas2.selectAll(".rect4").data(data).transition()
 					.duration(500)
@@ -527,7 +535,7 @@
 					.attr("y", marge + 2 * (hauteurRect + gap) + hauteurRect + 0.2 * gap)
 					.attr("width", echelleX(nestCompagnies[funcComp][0]["accidentsMortels"]))
 					.attr("height", hauteurRect)
-					.attr("fill", "#ff5c33");
+					.attr("fill", echelleCouleurAccMort(nestCompagnies[funcComp][0]["accidentsMortels"]));
 
 				//Les tooltips
 				canevas2.selectAll(".rect3").data(data)
