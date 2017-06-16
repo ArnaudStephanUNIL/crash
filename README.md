@@ -4,6 +4,8 @@
 
 En utilisant les données disponibles sur [FiveThirtyEight](https://github.com/fivethirtyeight/data/tree/master/airline-safety), ce programme permet de visualiser différentes statistiques touchant à la sûreté d'une cinquantaine de compagnies aériennes.
 
+Disponible à l'adresse : https://arnaudstephanunil.github.io/
+
 ## Interface
 
 Deux graphes sont disponibles, et ce qu'ils affichent est sélectionnable à l'aide des 4 menus déroulants en haut de la page. Les trois premiers ont une influence sur le 1er graphe, et permettent de changer les axes ainsi que la période temporelle d'intérêt (1985-2000, 2000-2014, ou bien 1985-2014). Une régression linéaire (ligne orange) permet de visualiser la relation entre les deux variables sélectionnées.
