@@ -17,7 +17,7 @@ Pour lancer le programme
 
 ### MacOS
 
-1. Télécharger index.html et crash.csv, et les mettre dans le même dossier
+1. Télécharger les fichiers et les extraire dans un dossier
 2. Lancer une fenêtre terminal
 3. Taper cd /chemin_du_dossier (ex : cd /Users/votre_username/Desktop/crash)
 4. Taper python -m SimpleHTTPServer
@@ -26,7 +26,7 @@ Pour lancer le programme
 
 ### Windows
 
-1. Télécharger index.html et crash.csv, et les mettre dans le même dossier
+1. Télécharger les fichiers et les extraire dans un dossier
 2. Lancer une invite de commande
 3. Taper cd /chemin_du_dossier (ex : C:\User\votre_username\Desktop\crash)
 4. Taper python3 -m http.server
@@ -36,5 +36,5 @@ Pour lancer le programme
 
 ## Auteur
 
-Ce programme a été créé par Arnaud STEPHAN dans le cadre du cours "Visualisation de données", sous la supervision d'Isaac PANTE, lors du semestre de printemps 2017 à l'Université de Lausanne.
+Ce programme a été créé par Arnaud STEPHAN dans le cadre du cours "Visualisation de données", sous la supervision d'Isaac PANTE, section SLI, Faculté des lettres, UNIL, lors du semestre de printemps 2017 à l'Université de Lausanne.
 
