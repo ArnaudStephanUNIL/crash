@@ -4,7 +4,7 @@
 
 En utilisant les données disponibles sur [FiveThirtyEight](https://github.com/fivethirtyeight/data/tree/master/airline-safety), ce programme permet, à l'aide de la librairie d3.js, de visualiser différentes statistiques touchant à la sûreté d'une cinquantaine de compagnies aériennes.
 
-Disponible à l'adresse : https://astephan91.github.io/
+Disponible à l'adresse : https://crashdavions.github.io/
 
 ## Interface
 
