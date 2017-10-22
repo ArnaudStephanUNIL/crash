@@ -8,10 +8,10 @@ Disponible à l'adresse : https://crashdavions.github.io/
 
 ## Interface
 
-Deux graphes sont disponibles, et ce qu'ils affichent est sélectionnable à l'aide des 4 menus déroulants en haut de la page. Les trois premiers ont une influence sur le 1er graphe, et permettent de changer les axes ainsi que la période temporelle d'intérêt (1985-2000, 2000-2014, ou bien 1985-2014). Une régression linéaire (ligne orange) permet de visualiser la relation entre les deux variables sélectionnées.
+Le graphique sur la page permet d'afficher une variable en fonction d'une autre. Quatre variables sont disponiles : Kilomètres par semaines, nombre d'accidents, nombre d'accidents mortels, et nombre de morts.
+Il est également possible de choisir entre 3 périodes temporelles : 1985-2000, 1985-2014, ou bien 2000-2014.
 
-Le 2e graphe présente une compagnie aérienne en particulier, choisie à l'aide du 4e menu déroulant, et la compare à la moyenne de toutes les compagnies sur la période 1985-2014. Ne sont disponibles que les statistiques liées aux accidents et aux accidents mortels.
-Lorsqu'une compagnie est sélectionnée, le point qui lui correspond sur le 1er graphe devient rouge. Les autres couleurs correspondent aux continents des maisons-mères de chaque compagnie.
+Lorsque l'on choisit, à l'aide du 4e menu déroulant, une compagnie aérienne en particulier, le point qui lui est associé sur le graphique devient rouge, et des statistiques apparaissent sous le graphique.
 
 ## Utilisation
 
